@@ -28,6 +28,8 @@ const [friend, setFriend] = useState('');
   const [dob, setDob] = useState(null);
   const [last, setLast] = useState(null);
   const [exp, setExp] = useState(null);
+const[name ,setName]= useState('');
+
 
   const valid =
     pwd.length >= 8 &&
@@ -45,7 +47,7 @@ const [friend, setFriend] = useState('');
   };
 
   
-  const handleSubmit = (e) => {
+  /*const handleSubmit = (e) => {
     e.preventDefault();
     
     if (valid) {
@@ -64,7 +66,51 @@ const [friend, setFriend] = useState('');
   } else {
     alert('Please enter a valid password');
   }
-  };
+  };*/
+
+  const handleSubmit = async (e) => {
+  e.preventDefault();
+console.log("form submitted",userId,pwd,name,color,friend);
+  fetch("http://localhost:8081/register", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      userId: userId,
+      name: name,
+      password: pwd,
+      favoriteColor: color,
+      nickname: friend,
+      dob: dob ? dob.toISOString().split('T')[0] : null
+    })
+  })
+  .then(res => res.text())
+  .then(msg => {
+    alert(msg);
+    navigate('/Success');
+  })
+  .catch(err => console.error(err));
+
+  /* try {
+      const res = await fetch("http://localhost:8081/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId, password })
+      });
+
+      const data = await res.json(); // parse JSON response
+
+      if (data.status === "success") {
+        setMessage(data.message);
+        navigate("/Success"); // go to success page
+      } else {
+        setMessage(data.message);
+      }
+    } catch (err) {
+      console.error(err);
+      setMessage("Error connecting to server ❌");
+    }*/
+   
+};
   return (
 
    <div className="container mt-5 p-4 bg-light border rounded">
@@ -83,7 +129,7 @@ const [friend, setFriend] = useState('');
           <div className='mb-3'>
             <label>User Name</label>
             <br />
-            <input type="text" placeholder="Enter User Name" />
+            <input type="text" placeholder="Enter User Name" onChange={(e)=> setName(e.target.value)}/>
           </div>
           <br />
 
@@ -115,16 +161,20 @@ const [friend, setFriend] = useState('');
             <br />
             <input type="text" placeholder="Enter your pet name"  onChange={(e) => setPet(e.target.value)} />
             <br />
+            <br/>
 
             <label>What is your favourite color?</label>
             <br />
             <input type="text" placeholder="Enter your favourite color"   onChange={(e) => setColor(e.target.value)}  />
             <br />
+            <br/>
 
             <label>What is your best friend name?</label>
             <br />
             <input type="text" placeholder="Enter your best friend name" onChange={(e) => setFriend(e.target.value)} />
             <br />
+            <br/>
+
           </div>
           <div className='mb-3'>
             <label>Password Expiry Date</label>
@@ -151,6 +201,7 @@ function App() {
   return (
     <Routes>
       <Route path="/" element={<Register />} />
+      <Route path="/login" element={<Login />} />
       <Route path="/Success" element={<Success />} />
          <Route path="/forgot" element={<ForgotPassword />} />
       <Route path="/change" element={<ChangePassword />} />
@@ -158,3 +209,4 @@ function App() {
   );
 }
 export default App;
+
