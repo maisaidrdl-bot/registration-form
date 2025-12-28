@@ -1,149 +1,4 @@
-/*import { useState } from "react";
-
-
-function Success() {
-  const registeredUser ={userId:'testuser', password:'Test@1234'}
-  const [userId, setUserId]= useState(' ')
-  const [password, setPassword]= useState(' ')
-  const[loggedIn, setLoggedIn]= useState(false)
-   const handleLogin = () => {
-    if (userId === registeredUser.userId && password === registeredUser.password) {
-      setLoggedIn(true);
-    } else {
-      alert('Invalid credentials. Please try again.');
-    }
-  };
-
-  return (
-
-  
-  
-    <div className="container mt-5 p-4 glass-card" >
-      {!loggedIn && (
-        <>
-        <h2 className="text-success"> Registration Success!</h2>
-        <h3>Welcome to next page</h3>
-
-        <div style={{marginTop:30}}>
-          <input
-         type="text"
-         placeholder="User Id"
- value={userId}
-  onChange={(e) => setUserId(e.target.value)}
-  style={{display:'block',marginBottom:10}}
-  />
-  <input
-    type="password"
-    placeholder="Password"
-    value={password}
-
-    onChange={(e) => setPassword(e.target.value)}
-    style={{display:'block',marginBottom:10}}
-  />
-  <button className="btn btn-primary" onClick={handleLogin}>Login</button>
-        </div>
-        </>
-      )}
-      {loggedIn && (
-        <div style={{marginTop:20}}>
-      <h2 className="text-success">  Registration successful!</h2>
-      <h1>Welcome to next page</h1>
-      <p></p>
-      <button className="btn btn-primary">Forgot password</button>
-      <button className="btn btn-secondary" style={{marginLeft:10}}>Change password</button>
-
-      
-
-      </div>
-      )}
-          
-    </div>
-  );
-}
-export default Success;*/
-
-/*import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-
-function Success() {
-  const navigate = useNavigate();
-
-  const registeredUser = { userId: 'testuser', password: 'Test@1234' };
-
-  const [userId, setUserId] = useState('');
-  const [password, setPassword] = useState('');
-  const [loggedIn, setLoggedIn] = useState(false);
-
-  const handleLogin = () => {
-    if (
-      userId === registeredUser.userId &&
-      password === registeredUser.password
-    ) {
-      setLoggedIn(true);
-    } else {
-      alert('Invalid credentials. Please try again.');
-    }
-  };
-
-  return (
-    <div className="container mt-5 p-4 bg-light border rounded">
-      {!loggedIn && (
-        <>
-          <h2 className="text-success">Registration Success!</h2>
-          <h3>Welcome to Login Page</h3>
-
-          <div style={{ marginTop: 30 }}>
-            <input
-              type="text"
-              placeholder="User Id"
-              value={userId}
-              onChange={(e) => setUserId(e.target.value)}
-              style={{ display: 'block', marginBottom: 10 }}
-            />
-
-            <input
-              type="password"
-              placeholder="Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              style={{ display: 'block', marginBottom: 10 }}
-            />
-
-            <button className="btn btn-primary" onClick={handleLogin}>
-              Login
-            </button>
-          </div>
-        </>
-      )}
-
-      {loggedIn && (
-        <div style={{ marginTop: 20 }}>
-          <h2 className="text-success">Login successful!</h2>
-          <h4>Welcome</h4>
-
-          <button
-            className="btn btn-primary"
-            onClick={() => navigate('/forgot')}
-          >
-            Forgot Password
-          </button>
-
-          <button
-            className="btn btn-secondary"
-            style={{ marginLeft: 10 }}
-            onClick={() => navigate('/change')}
-          >
-            Change Password
-          </button>
-        </div>
-      )}
-    </div>
-  );
-}
-
-export default Success;
-  */
- import { useState } from "react";
+import { useState } from "react";
 
 function Login() {
   const [mode, setMode] = useState("login"); // login | forgot | change
@@ -166,14 +21,21 @@ function Login() {
   const storedPwd = localStorage.getItem("password");
 
   // ---------------- LOGIN ----------------
-  const handleLogin = () => {
-    if (userId.trim() === storedUserId && password.trim() === storedPwd) {
-      setLoggedIn(true);
-    } else {
-      alert("Invalid credentials. Please try again.");
-    }
+  const handleLogin = async (userId, password) => {
+  try {
+    const res = await fetch("http://localhost:8081/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ userId, password })
+    });
 
-  };
+    const message = await res.text();
+    alert(message); // Shows "Login Successful" or "Invalid Password"
+  } catch (err) {
+    console.error(err);
+    alert("Error connecting to server");
+  }
+};
 
   // ---------------- FORGOT PASSWORD ----------------
   const handleForgot = () => {
@@ -254,9 +116,12 @@ console.log("Stored Password:", storedPwd);
             onChange={(e) => setPassword(e.target.value)}
           />
 
-          <button className="btn btn-primary" onClick={handleLogin}>
-            Login
-          </button>
+          <button
+  className="btn btn-primary"
+  onClick={() => handleLogin(userId, password)}
+>
+  Login
+</button>
 
           <div className="mt-3">
             <button
